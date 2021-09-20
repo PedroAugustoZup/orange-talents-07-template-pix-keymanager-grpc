@@ -1,0 +1,6 @@
+applicationType: grpc
+defaultPackage: br.com.alura
+testFramework: junit
+sourceLanguage: kotlin
+buildTool: gradle_kotlin
+features: [annotation-api, app-name, gradle, grpc, hibernate-jpa, jdbc-hikari, junit, kotlin, kotlin-application, logback, mysql, readme, shade, testcontainers, yaml]

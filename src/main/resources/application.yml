@@ -1,0 +1,24 @@
+micronaut:
+  application:
+    name: keymanagerGrpc
+datasources:
+  default:
+    url: ${DATABASE_URL:`jdbc:mysql://localhost:3309/proposta?createDatabaseIfNotExist=true&useTimezone=true&serverTimezone=UTC`}
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: ${DATABASE_USERNAME:root}
+    password: ${DATABASE_PASSWORD:pede99}
+
+
+jpa.default.properties.hibernate.hbm2ddl.auto: update
+
+#hibernate
+jpa:
+  show-sql: true
+  hibernate:
+    ddl-auto: update
+    naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    jta:
+      allowTransactionAccess: true
+  properties:
+    hibernate:
+      dialect: org.hibernate.dialect.MySQL8Dialect

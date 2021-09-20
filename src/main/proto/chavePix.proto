@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "br.com.alura";
+option java_outer_classname = "ChavePixGrpc";
+
+package br.com.alura;
+
+service ChavePixGrpcService{
+  rpc registra(ChavePixRequest) returns (ChavePixResponse){}
+}
+
+enum TipoChave{
+  UNKNOWM_CHAVE = 0;
+  CPF = 1;
+  TELEFONE_CELULAR = 2;
+  EMAIL = 3;
+  CHAVE_ALEATORIA = 4;
+}
+
+enum Conta{
+    UNKNOWM_CONTA = 0;
+    CONTA_CORRENTE = 1;
+    CONTA_POUPANCA = 2;
+}
+
+message ChavePixRequest{
+  string idCliente = 1;
+  TipoChave tipoChave = 2;
+  string valorChave = 3;
+  Conta tipoConta = 4;
+}
+
+message ChavePixResponse{
+  string idChave = 1;
+}
