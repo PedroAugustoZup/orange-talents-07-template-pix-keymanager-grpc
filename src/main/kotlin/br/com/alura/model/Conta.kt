@@ -1,12 +1,14 @@
 package br.com.alura.model
+import br.com.alura.TipoConta
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
 @Entity
 class Conta(
-    @field:NotBlank
-    val tipo: String,
+    @field:NotNull
+    @field:Enumerated(EnumType.STRING)
+    val tipo: TipoConta,
     @field:Embedded
     @field:NotNull
     val instituicao: Instituicao,

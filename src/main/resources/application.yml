@@ -23,4 +23,4 @@ jpa:
     hibernate:
       dialect: org.hibernate.dialect.MySQL8Dialect
 
-contas.client: ${CONTAS_CLIENT:`localhost:9091/api/v1`}
+contas.client: ${CONTAS_CLIENT:`http://localhost:9091/api/v1`}

@@ -40,13 +40,13 @@ fun TipoChave.validaKey(key: String): Boolean {
         TipoChave.CNPJ -> {
             return key.matches("^\\d{2}\\.\\d{3}\\.\\d{3}\\/\\d{4}\\-\\d{2}\$".toRegex())
         }
-        TipoChave.TELEFONE_CELULAR -> {
+        TipoChave.PHONE -> {
             return key.matches("^\\+[1-9][0-9]\\d{1,14}\$".toRegex())
         }
         TipoChave.EMAIL -> {
             return key.matches("[a-z0-9!#\$%&'+/=?^_{|}~-]+(?:\\.[a-z0-9!#\$%&'*+/=?^_{|}~-]+)@(?:[a-z0-9](?:[a-z0-9-][a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-][a-z0-9])?".toRegex())
         }
-        TipoChave.CHAVE_ALEATORIA -> {
+        TipoChave.RANDOM -> {
             return key.isEmpty()
         }
 

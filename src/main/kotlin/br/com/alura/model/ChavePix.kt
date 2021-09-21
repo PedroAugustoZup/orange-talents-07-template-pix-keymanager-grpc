@@ -16,7 +16,7 @@ class ChavePix(
     @field:Enumerated(EnumType.STRING)
     val tipoChave: TipoChave,
     @field:Size(max = 77)
-    val valorChave: String,
+    var valorChave: String,
     @field:NotNull
     @field:ManyToOne(cascade= [CascadeType.ALL])
     val conta: Conta
