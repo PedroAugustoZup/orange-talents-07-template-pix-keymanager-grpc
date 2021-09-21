@@ -5,9 +5,9 @@ import br.com.alura.dto.NovaChavePix
 
 fun ChavePixRequest.toDto(): NovaChavePix{
     return NovaChavePix(
-        this.idCliente,
-        this.tipoChave,
-        this.valorChave,
-        this.tipoConta
+        idCliente,
+        tipoChave,
+        valorChave,
+        tipoConta
     )
 }

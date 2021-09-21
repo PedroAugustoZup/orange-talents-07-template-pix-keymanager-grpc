@@ -19,7 +19,7 @@ enum TipoChave{
   CNPJ = 5;
 }
 
-enum Conta{
+enum TipoConta{
     UNKNOWM_CONTA = 0;
     CONTA_CORRENTE = 1;
     CONTA_POUPANCA = 2;
@@ -29,7 +29,7 @@ message ChavePixRequest{
   string idCliente = 1;
   TipoChave tipoChave = 2;
   string valorChave = 3;
-  Conta tipoConta = 4;
+  TipoConta tipoConta = 4;
 }
 
 message ChavePixResponse{

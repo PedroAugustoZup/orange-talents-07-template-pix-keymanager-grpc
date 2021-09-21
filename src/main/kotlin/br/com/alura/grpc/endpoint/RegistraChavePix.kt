@@ -1,8 +1,10 @@
-package br.com.alura.service
+package br.com.alura.grpc.endpoint
 
 import br.com.alura.ChavePixGrpcServiceGrpc
 import br.com.alura.ChavePixRequest
 import br.com.alura.ChavePixResponse
+import br.com.alura.service.RegistraChavePixService
+import br.com.alura.service.toDto
 import io.grpc.stub.StreamObserver
 import io.micronaut.validation.Validated
 import jakarta.inject.Singleton
@@ -17,10 +19,10 @@ class RegistraChavePix(val service: RegistraChavePixService): ChavePixGrpcServic
                           responseObserver: StreamObserver<ChavePixResponse>) {
         val novaChave = request.toDto()
 
-        service.registraChave(novaChave)
+        val idChavePixCadastrada = service.registraChave(novaChave)
 
         val response = ChavePixResponse.newBuilder()
-            .setIdChave("teste")
+            .setIdChave(idChavePixCadastrada)
             .build()
         responseObserver.onNext(response)
         logger.info("Chave do tipo ${request.tipoChave.name} cadastrada com sucesso")

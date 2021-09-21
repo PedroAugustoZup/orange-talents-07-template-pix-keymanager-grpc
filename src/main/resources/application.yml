@@ -3,7 +3,7 @@ micronaut:
     name: keymanagerGrpc
 datasources:
   default:
-    url: ${DATABASE_URL:`jdbc:mysql://localhost:3309/proposta?createDatabaseIfNotExist=true&useTimezone=true&serverTimezone=UTC`}
+    url: ${DATABASE_URL:`jdbc:mysql://localhost:3309/pix?createDatabaseIfNotExist=true&useTimezone=true&serverTimezone=UTC`}
     driverClassName: com.mysql.cj.jdbc.Driver
     username: ${DATABASE_USERNAME:root}
     password: ${DATABASE_PASSWORD:pede99}
