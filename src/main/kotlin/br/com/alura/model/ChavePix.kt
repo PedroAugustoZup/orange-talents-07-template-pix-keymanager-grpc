@@ -15,7 +15,6 @@ class ChavePix(
     @field:NotNull
     @field:Enumerated(EnumType.STRING)
     val tipoChave: TipoChave,
-    @field:NotBlank
     @field:Size(max = 77)
     val valorChave: String,
     @field:NotNull
