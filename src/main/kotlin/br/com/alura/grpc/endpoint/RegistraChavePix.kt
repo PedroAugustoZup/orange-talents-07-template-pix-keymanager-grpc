@@ -10,6 +10,7 @@ import io.grpc.Status
 import io.grpc.stub.StreamObserver
 import io.micronaut.validation.Validated
 import jakarta.inject.Singleton
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import javax.validation.ConstraintViolationException
 
@@ -17,7 +18,7 @@ import javax.validation.ConstraintViolationException
 @Singleton
 class RegistraChavePix(val service: RegistraChavePixService): ChavePixGrpcServiceGrpc.ChavePixGrpcServiceImplBase() {
 
-    val logger = LoggerFactory.getLogger(RegistraChavePix::class.java)
+    val logger: Logger = LoggerFactory.getLogger(RegistraChavePix::class.java)
     override fun registra(request: ChavePixRequest,
                           responseObserver: StreamObserver<ChavePixResponse>) {
         val novaChave = request.toDto()
@@ -30,10 +31,16 @@ class RegistraChavePix(val service: RegistraChavePixService): ChavePixGrpcServic
             logger.info("Chave do tipo ${request.tipoChave.name} cadastrada com sucesso")
         }catch (e: ChavePixExistenteException) {
             logger.error("Exception caused while processing the call: ${e.localizedMessage}", e)
-            responseObserver.onError(Status.ALREADY_EXISTS.withDescription(e.message).asRuntimeException())
+            responseObserver.onError(Status.ALREADY_EXISTS
+                .withDescription(e.message)
+                .asRuntimeException())
+            return
         }catch (e: ConstraintViolationException){
             logger.error("Exception caused while processing the call: ${e.localizedMessage}")
-            responseObserver.onError(Status.INVALID_ARGUMENT.withDescription(e.message).asRuntimeException())
+            responseObserver.onError(Status.INVALID_ARGUMENT
+                .withDescription(e.message)
+                .asRuntimeException())
+            return
         }
         responseObserver.onCompleted()
     }

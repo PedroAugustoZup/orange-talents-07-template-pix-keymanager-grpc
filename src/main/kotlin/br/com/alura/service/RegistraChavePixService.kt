@@ -31,7 +31,6 @@ class RegistraChavePixService(val repository: ChavePixRepository,
 
         val contasResponse = contasClient.buscaConta(novaChave.idCliente, novaChave.tipoConta.name)
 
-//        TODO:Comunicar com o BCB passando a chave e os dados do cliente
         val chavePix = comunicaBcb(novaChave.toModel(contasResponse.body().toModel()),
             contasResponse)
         transactionalEvent.execute {
