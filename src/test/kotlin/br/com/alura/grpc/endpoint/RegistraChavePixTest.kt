@@ -1,9 +1,19 @@
 package br.com.alura.grpc.endpoint
 
-import br.com.alura.ChavePixGrpcServiceGrpc
+
 import br.com.alura.ChavePixRequest
+import br.com.alura.ChavePixServiceRegistraGrpc
 import br.com.alura.TipoChave
 import br.com.alura.TipoConta
+import br.com.alura.clients.BcbClient
+import br.com.alura.clients.ContasClient
+import br.com.alura.clients.dto.reponse.ClienteApiResponse
+import br.com.alura.clients.dto.reponse.CreatePixKeyResponse
+import br.com.alura.clients.dto.reponse.InstituicaoErpItauResponse
+import br.com.alura.clients.dto.request.ContaRequest
+import br.com.alura.clients.dto.request.CreatePixKeyRequest
+import br.com.alura.clients.dto.request.TitularRequest
+import br.com.alura.clients.dto.request.toRequest
 import br.com.alura.model.ChavePix
 import br.com.alura.model.Conta
 import br.com.alura.model.Instituicao
@@ -15,29 +25,33 @@ import io.grpc.StatusRuntimeException
 import io.micronaut.context.annotation.Factory
 import io.micronaut.grpc.annotation.GrpcChannel
 import io.micronaut.grpc.server.GrpcServerChannel
+import io.micronaut.http.HttpResponse
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Singleton
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.whenever
+import java.util.*
 
 @MicronautTest(transactional = false)
 internal class RegistraChavePixTest(
-    val grpcClient: ChavePixGrpcServiceGrpc.ChavePixGrpcServiceBlockingStub,
-    val repository: ChavePixRepository
+    private val grpcClient: ChavePixServiceRegistraGrpc.ChavePixServiceRegistraBlockingStub,
+    private val repository: ChavePixRepository
 ) {
-//    @Inject
-//    lateinit var service: RegistraChavePixService
+    lateinit var bcbClient: BcbClient
 
-//    @MockBean(RegistraChavePixService::class)
-//    fun productRepository(): RegistraChavePixService {
-//        return mock(RegistraChavePixService::class.java) // (3)
-//    }
+    lateinit var contasClient: ContasClient
 
     @BeforeEach
     fun setUp() {
+        contasClient = mock(ContasClient::class.java)
+        bcbClient = mock(BcbClient::class.java)
         repository.deleteAll()
     }
 
@@ -47,23 +61,36 @@ internal class RegistraChavePixTest(
     }
 
     /*
-        1- caminho feliz salvando tudo corretamente
-        2- caminho triste quando já existe essa have
+        1- caminho feliz salvando tudo corretamente - V
+        2- caminho triste quando já existe essa chave - V
         3- caminho quando algum valor está errado
      */
 
     @Test
+    fun `deve cadastrar uma nova chave`(){
+        val chavePixRequest = ChavePixRequest.newBuilder()
+            .setTipoChave(TipoChave.CPF)
+            .setValorChave("78394589634")
+            .setIdCliente("c56dfef4-7901-44fb-84e2-a2cefb157890")
+            .setTipoConta(TipoConta.CONTA_CORRENTE)
+            .build()
+        val chaveCadastrada = chaveCadastrada()
+        val createPixKeyRequest = chaveRequestBcbClient(chaveCadastrada)
+
+        whenever(bcbClient.salvaChavePix(createPixKeyRequest)).thenReturn(CreatePixKeyResponse("78394589634"))
+
+        val response = grpcClient.registra(chavePixRequest)
+        val chaveSalva = repository.findById(response.idChave.toLong())
+
+        with(chaveSalva){
+            assertTrue(chaveSalva.isPresent)
+            assertEquals(chaveSalva.get().valorChave, chavePixRequest.valorChave)
+        }
+    }
+    @Test
     fun `deve dar erro ao registrar uma chave que já existe`() {
-        //cenario
-        val chaveCadastrada = ChavePix("c56dfef4-7901-44fb-84e2-a2cefb157890",
-            TipoChave.CPF, "78394589634",
-            Conta(TipoConta.CONTA_CORRENTE, Instituicao("ITAÚ UNIBANCO S.A.",
-                                                    "60701190"),
-                "0001", "291900", Titular("c56dfef4-7901-44fb-84e2-a2cefb157890",
-                                            "Rafael M C Ponte", "02467781054")
-            )
-        )
-        repository.save(chaveCadastrada)
+
+        val chaveCadastrada = repository.save(chaveCadastrada())
 
         val chavePixRequest = ChavePixRequest.newBuilder()
                             .setTipoChave(TipoChave.CPF)
@@ -71,22 +98,55 @@ internal class RegistraChavePixTest(
                             .setIdCliente("c56dfef4-7901-44fb-84e2-a2cefb157890")
                             .setTipoConta(TipoConta.CONTA_CORRENTE)
                             .build()
-        //acao
+
+        `when`(contasClient.buscaCliente("c56dfef4-7901-44fb-84e2-a2cefb157890"))
+            .thenReturn(HttpResponse
+            .ok(ClienteApiResponse(
+                UUID.fromString(chavePixRequest.idCliente),
+                chaveCadastrada.conta.titular.nomeTitular,
+                chaveCadastrada.conta.titular.cpf,
+                InstituicaoErpItauResponse("ITAÚ UNIBANCO S.A.", "60701190"))))
+
         val error = assertThrows<StatusRuntimeException>{
             grpcClient.registra(chavePixRequest)
         }
 
-        //verificação
+
         with(error){
             assertEquals(Status.ALREADY_EXISTS.code, status.code)
+            assertEquals("Chave já existente", status.description)
         }
+    }
+
+    private fun chaveCadastrada(): ChavePix {
+        return ChavePix("c56dfef4-7901-44fb-84e2-a2cefb157890",
+            TipoChave.CPF, "78394589634",
+            Conta(TipoConta.CONTA_CORRENTE, Instituicao("ITAÚ UNIBANCO S.A.",
+                "60701190"),
+                "0001", "291900", Titular("c56dfef4-7901-44fb-84e2-a2cefb157890",
+                    "Rafael M C Ponte", "02467781054")
+            )
+        )
+    }
+
+    private fun chaveRequestBcbClient(chaveCadastrada: ChavePix): CreatePixKeyRequest {
+        return CreatePixKeyRequest(keyType = chaveCadastrada.tipoChave.name,
+            key= chaveCadastrada.valorChave,
+            bankAccount= ContaRequest(participant = chaveCadastrada.conta.instituicao.ispb,
+                branch= chaveCadastrada.conta.agencia,
+                accountNumber= chaveCadastrada.conta.numero,
+                accountType= chaveCadastrada.conta.tipo.toRequest()),
+            owner = TitularRequest(type = "NATURAL_PERSON",
+                name= chaveCadastrada.conta.titular.nomeTitular,
+                taxIdNumber = chaveCadastrada.conta.titular.cpf)
+        )
     }
 
     @Factory
     class Cliente(){
         @Singleton
-        fun clientGrpc(@GrpcChannel(GrpcServerChannel.NAME) channel : ManagedChannel): ChavePixGrpcServiceGrpc.ChavePixGrpcServiceBlockingStub{
-            return ChavePixGrpcServiceGrpc.newBlockingStub(channel)
+        fun clientGrpc(@GrpcChannel(GrpcServerChannel.NAME) channel : ManagedChannel): ChavePixServiceRegistraGrpc.ChavePixServiceRegistraBlockingStub{
+            return ChavePixServiceRegistraGrpc.newBlockingStub(channel)
         }
     }
 }

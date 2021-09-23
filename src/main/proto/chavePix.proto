@@ -6,8 +6,12 @@ option java_outer_classname = "ChavePixGrpc";
 
 package br.com.alura;
 
-service ChavePixGrpcService{
+service ChavePixServiceRegistra{
   rpc registra(ChavePixRequest) returns (ChavePixResponse){}
+}
+
+service ChavePixServiceRemove{
+  rpc excluir(RemoverChavePixRequest) returns (RemoverChavePixResponse){}
 }
 
 enum TipoChave{
@@ -34,4 +38,13 @@ message ChavePixRequest{
 
 message ChavePixResponse{
   string idChave = 1;
+}
+
+message RemoverChavePixRequest{
+  string pixId = 1;
+  string isbp = 2;
+}
+
+message RemoverChavePixResponse{
+  string mensagem = 1;
 }

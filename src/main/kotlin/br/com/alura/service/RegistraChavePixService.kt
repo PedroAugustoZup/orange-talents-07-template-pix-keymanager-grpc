@@ -26,7 +26,7 @@ class RegistraChavePixService(val repository: ChavePixRepository,
 ){
 
     fun registraChave(@Valid novaChave: NovaChavePix): String {
-        if(repository.existsByValorChave(novaChave.valorChave))
+        if(!repository.findByValorChave(novaChave.valorChave).isEmpty)
             throw ChavePixExistenteException("Chave já existente")
 
         val contasResponse = contasClient.buscaConta(novaChave.idCliente, novaChave.tipoConta.name)
@@ -48,7 +48,8 @@ class RegistraChavePixService(val repository: ChavePixRepository,
                                         accountType= chavePix.conta.tipo.toRequest()),
             owner = TitularRequest(type = "NATURAL_PERSON",
                                     name= chavePix.conta.titular.nomeTitular,
-                                    taxIdNumber = chavePix.conta.titular.cpf) )
+                                    taxIdNumber = chavePix.conta.titular.cpf)
+        )
 
         val response  = bcbClient.salvaChavePix(createPixKeyRequest)
         chavePix.valorChave = response.key

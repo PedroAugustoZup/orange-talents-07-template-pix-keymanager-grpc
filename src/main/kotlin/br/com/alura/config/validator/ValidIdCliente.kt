@@ -21,9 +21,9 @@ annotation class ValidIdCliente(
 
 @Singleton
 class ValidIdClienteClass(val contasClient: ContasClient): ConstraintValidator<ValidIdCliente, String> {
-    override fun isValid(value: String?, context: ConstraintValidatorContext?): Boolean {
+    override fun isValid(value: String, context: ConstraintValidatorContext?): Boolean {
 
-        val response = contasClient.buscaCliente(value!!)
+        val response = contasClient.buscaCliente(value)
         return response.status.equals(HttpStatus.OK)
     }
 
