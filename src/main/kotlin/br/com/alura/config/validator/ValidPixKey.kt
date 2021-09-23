@@ -44,7 +44,7 @@ fun TipoChave.validaKey(key: String): Boolean {
             return key.matches("^\\+[1-9][0-9]\\d{1,14}\$".toRegex())
         }
         TipoChave.EMAIL -> {
-            return key.matches("[a-z0-9!#\$%&'+/=?^_{|}~-]+(?:\\.[a-z0-9!#\$%&'*+/=?^_{|}~-]+)@(?:[a-z0-9](?:[a-z0-9-][a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-][a-z0-9])?".toRegex())
+            return key.matches("[a-z0-9!#\$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#\$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?".toRegex())
         }
         TipoChave.RANDOM -> {
             return key.isEmpty()

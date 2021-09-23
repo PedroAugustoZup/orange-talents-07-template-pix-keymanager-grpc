@@ -1,7 +1,6 @@
 package br.com.alura.model
 
 import br.com.alura.TipoChave
-import br.com.alura.config.validator.ValidIdCliente
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
@@ -10,7 +9,6 @@ import javax.validation.constraints.Size
 @Entity
 class ChavePix(
     @field:NotBlank
-    @field:ValidIdCliente
     val idCliente: String,
     @field:NotNull
     @field:Enumerated(EnumType.STRING)
