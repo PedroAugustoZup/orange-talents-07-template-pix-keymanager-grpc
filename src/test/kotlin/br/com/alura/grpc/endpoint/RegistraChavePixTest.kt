@@ -17,17 +17,12 @@ import br.com.alura.model.Conta
 import br.com.alura.model.Instituicao
 import br.com.alura.model.Titular
 import br.com.alura.repository.ChavePixRepository
-import io.grpc.ManagedChannel
 import io.grpc.Status
 import io.grpc.StatusRuntimeException
-import io.micronaut.context.annotation.Factory
-import io.micronaut.grpc.annotation.GrpcChannel
-import io.micronaut.grpc.server.GrpcServerChannel
 import io.micronaut.http.HttpResponse
 import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
-import jakarta.inject.Singleton
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -111,6 +106,7 @@ internal class RegistraChavePixTest(
             assertEquals(chaveSalva.get().valorChave, chavePixRequest.valorChave)
         }
     }
+
     @Test
     fun `deve dar erro ao registrar uma chave que já existe`() {
 
@@ -191,13 +187,5 @@ internal class RegistraChavePixTest(
                 name= chaveCadastrada.conta.titular.nomeTitular,
                 taxIdNumber = chaveCadastrada.conta.titular.cpf)
         )
-    }
-
-    @Factory
-    class Cliente(){
-        @Singleton
-        fun clientGrpc(@GrpcChannel(GrpcServerChannel.NAME) channel : ManagedChannel): ChavePixServiceRegistraGrpc.ChavePixServiceRegistraBlockingStub{
-            return ChavePixServiceRegistraGrpc.newBlockingStub(channel)
-        }
     }
 }

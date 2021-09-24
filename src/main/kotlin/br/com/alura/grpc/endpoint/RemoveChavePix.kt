@@ -43,6 +43,10 @@ class RemoveChavePix(
                 responseObserver?.onNext(RemoverChavePixResponse.newBuilder()
                     .setMensagem("Chave pix removida com sucesso")
                     .build())
+            }else{
+                responseObserver!!.onError(
+                    Status.UNKNOWN
+                        .withDescription("Ops, algo deu errado").asRuntimeException())
             }
         }
         responseObserver?.onCompleted()
