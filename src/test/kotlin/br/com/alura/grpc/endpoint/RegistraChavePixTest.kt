@@ -144,8 +144,31 @@ internal class RegistraChavePixTest(
 
     @Test
     fun `deve dar erro ao passar um dado inválido na chave`(){
+        val chavePixRequest = ChavePixRequest.newBuilder()
+            .setTipoChave(TipoChave.CPF)
+            .setValorChave("")
+            .setIdCliente("c56dfef4-7901-44fb-84e2-a2cefb157890")
+            .setTipoConta(TipoConta.CONTA_CORRENTE)
+            .build()
 
+        `when`(contasClient.buscaCliente(chavePixRequest.idCliente))
+            .thenReturn(HttpResponse.ok(ClienteApiResponse(
+                UUID.fromString(chavePixRequest.idCliente),
+                "Rafael Ponte",
+                "78394589634",
+                InstituicaoErpItauResponse("ITAÚ UNIBANCO S.A.", "60701190"))))
+
+        val error = assertThrows<StatusRuntimeException>{
+            grpcClient.registra(chavePixRequest)
+        }
+
+        with(error){
+            assertEquals(Status.INVALID_ARGUMENT.code, status.code)
+            assertTrue(status.description!!.contains("Verifique o tipo e o valor de sua chave"))
+        }
     }
+
+
     private fun chaveCadastrada(): ChavePix {
         return ChavePix("c56dfef4-7901-44fb-84e2-a2cefb157890",
             TipoChave.CPF, "78394589634",

@@ -30,10 +30,6 @@ class ValidPixKeyClass: ConstraintValidator<ValidPixKey, NovaChavePix> {
 
 fun TipoChave.validaKey(key: String): Boolean {
     when (this){
-
-        TipoChave.UNKNOWM_CHAVE -> {
-            return false
-        }
         TipoChave.CPF -> {
             return key.matches("^[0-9]{11}\$".toRegex())
         }
