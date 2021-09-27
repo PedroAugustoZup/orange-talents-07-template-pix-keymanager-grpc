@@ -17,4 +17,9 @@ class Cliente{
     fun clienteGrpcRemove(@GrpcChannel(GrpcServerChannel.NAME) channel : ManagedChannel): ChavePixServiceRemoveGrpc.ChavePixServiceRemoveBlockingStub{
         return ChavePixServiceRemoveGrpc.newBlockingStub(channel)
     }
+
+    @Singleton
+    fun clienteGrpcCarrega(@GrpcChannel(GrpcServerChannel.NAME) channel : ManagedChannel): ChavePixServiceCarregaGrpc.ChavePixServiceCarregaBlockingStub{
+        return ChavePixServiceCarregaGrpc.newBlockingStub(channel)
+    }
 }

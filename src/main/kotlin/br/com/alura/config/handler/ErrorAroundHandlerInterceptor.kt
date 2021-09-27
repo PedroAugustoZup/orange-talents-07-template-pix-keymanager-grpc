@@ -1,6 +1,7 @@
 package br.com.alura.config.handler
 
 import br.com.alura.config.exceptions.ChavePixExistenteException
+import br.com.alura.config.exceptions.ChavePixNaoEncontradaException
 import io.grpc.Status
 import io.grpc.stub.StreamObserver
 import io.micronaut.aop.InterceptorBean
@@ -32,6 +33,9 @@ class ErrorAroundHandlerInterceptor : MethodInterceptor<Any, Any> {
                 is HttpClientException -> Status.UNAVAILABLE
                     .withCause(ex)
                     .withDescription(ex.cause!!.message)
+                is ChavePixNaoEncontradaException -> Status.NOT_FOUND
+                    .withCause(ex)
+                    .withDescription(ex.message)
                 else -> Status.UNKNOWN
                     .withCause(ex)
                     .withDescription("Ops, um erro inesperado ocorreu")
