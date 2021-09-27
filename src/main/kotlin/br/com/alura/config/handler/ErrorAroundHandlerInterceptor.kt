@@ -36,6 +36,9 @@ class ErrorAroundHandlerInterceptor : MethodInterceptor<Any, Any> {
                 is ChavePixNaoEncontradaException -> Status.NOT_FOUND
                     .withCause(ex)
                     .withDescription(ex.message)
+                is IllegalArgumentException -> Status.INVALID_ARGUMENT
+                    .withCause(ex)
+                    .withDescription(ex.message)
                 else -> Status.UNKNOWN
                     .withCause(ex)
                     .withDescription("Ops, um erro inesperado ocorreu")

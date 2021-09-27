@@ -22,7 +22,7 @@ data class PixKeyDetailsResponse(
                             AccountType.CACC -> TipoConta.CONTA_CORRENTE
                             AccountType.SVGS -> TipoConta.CONTA_POUPANCA
                         },
-                        instituicao = Instituicoes.nome(bankAccount.participant),
+                        instituicao = Instituicoes().nome(bankAccount.participant),
                         agencia = bankAccount.branch,
                         numero = bankAccount.accountNumber,
                         titular = owner.name,
