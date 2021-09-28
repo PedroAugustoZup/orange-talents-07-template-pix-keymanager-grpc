@@ -22,4 +22,9 @@ class Cliente{
     fun clienteGrpcCarrega(@GrpcChannel(GrpcServerChannel.NAME) channel : ManagedChannel): ChavePixServiceCarregaGrpc.ChavePixServiceCarregaBlockingStub{
         return ChavePixServiceCarregaGrpc.newBlockingStub(channel)
     }
+
+    @Singleton
+    fun clienteGrpcListaChaveCliente(@GrpcChannel(GrpcServerChannel.NAME) channel : ManagedChannel): ChavePixServiceListaChaveClienteGrpc.ChavePixServiceListaChaveClienteBlockingStub{
+        return ChavePixServiceListaChaveClienteGrpc.newBlockingStub(channel)
+    }
 }
