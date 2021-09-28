@@ -20,6 +20,10 @@ service ChavePixServiceCarrega{
   rpc carrega(CarregaChavePixRequest) returns (CarregaChavePixResponse){}
 }
 
+service ChavePixServiceListaChaveCliente{
+  rpc lista(ListaChaveClienteRequest) returns (ListaChaveClienteResponse){}
+}
+
 enum TipoChave{
   UNKNOWM_CHAVE = 0;
   CPF = 1;
@@ -88,3 +92,19 @@ message CarregaChavePixResponse{
   string pixId = 2;
   ChavePix chave = 3;
 }
+
+message ListaChaveClienteRequest{
+  string clientId = 1;
+}
+
+message ListaChaveClienteResponse{
+  message ChaveCliente{
+    string pixId = 1;
+    string clientId = 2;
+    TipoChave tipoChave = 3;
+    string valorChave = 4;
+    TipoConta tipoConta = 5;
+  }
+  repeated ChaveCliente chaves = 1;
+}
+
