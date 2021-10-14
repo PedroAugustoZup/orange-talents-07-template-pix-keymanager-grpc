@@ -2,6 +2,7 @@ package br.com.alura.config.handler
 
 import br.com.alura.config.exceptions.ChavePixExistenteException
 import br.com.alura.config.exceptions.ChavePixNaoEncontradaException
+import br.com.alura.config.exceptions.ContaInvalidaException
 import io.grpc.Status
 import io.grpc.stub.StreamObserver
 import io.micronaut.aop.InterceptorBean
@@ -37,6 +38,9 @@ class ErrorAroundHandlerInterceptor : MethodInterceptor<Any, Any> {
                     .withCause(ex)
                     .withDescription(ex.message)
                 is IllegalArgumentException -> Status.INVALID_ARGUMENT
+                    .withCause(ex)
+                    .withDescription(ex.message)
+                is ContaInvalidaException -> Status.INVALID_ARGUMENT
                     .withCause(ex)
                     .withDescription(ex.message)
                 else -> Status.UNKNOWN

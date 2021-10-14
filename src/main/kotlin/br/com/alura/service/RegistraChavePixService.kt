@@ -8,11 +8,13 @@ import br.com.alura.clients.dto.request.CreatePixKeyRequest
 import br.com.alura.clients.dto.request.TitularRequest
 import br.com.alura.clients.dto.request.toRequest
 import br.com.alura.config.exceptions.ChavePixExistenteException
+import br.com.alura.config.exceptions.ContaInvalidaException
 import br.com.alura.dto.NovaChavePix
 import br.com.alura.model.ChavePix
 import br.com.alura.repository.ChavePixRepository
 import br.com.alura.utils.TransactionalEvent
 import io.micronaut.http.HttpResponse
+import io.micronaut.http.HttpStatus
 import io.micronaut.validation.Validated
 import jakarta.inject.Singleton
 import javax.validation.Valid
@@ -31,12 +33,16 @@ class RegistraChavePixService(val repository: ChavePixRepository,
 
         val contasResponse = contasClient.buscaConta(novaChave.idCliente, novaChave.tipoConta.name)
 
-        val chavePix = comunicaBcb(novaChave.toModel(contasResponse.body().toModel()),
-            contasResponse)
-        transactionalEvent.execute {
-            repository.save(chavePix)
+        if(contasResponse.status.equals(HttpStatus.OK)){
+            val chavePix = comunicaBcb(novaChave.toModel(contasResponse.body().toModel()),
+                contasResponse)
+            transactionalEvent.execute {
+                repository.save(chavePix)
+            }
+            return chavePix.id.toString()
+        }else{
+            throw ContaInvalidaException("Conta não encontrada")
         }
-        return chavePix.id.toString()
     }
 
     private fun comunicaBcb(chavePix: ChavePix, contasResponse: HttpResponse<ContaApiResponse>): ChavePix {

@@ -31,6 +31,7 @@ class RemoveChavePix(
         validator.validate(removeChavePixDto)
 
         val possivelChave = chavePixRepository.findByValorChave(removeChavePixDto!!.valorChave)
+
         if(possivelChave.isEmpty){
             responseObserver!!.onError(
                 Status.NOT_FOUND
